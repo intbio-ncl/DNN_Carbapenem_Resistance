@@ -647,26 +647,29 @@ def plot_all_heads(ancestor_sequence, predicted_descendant_sequence, attention_d
             plot_attention_head(ancestor_sequence, predicted_descendant_sequence, head, head_identity, epoch, str(decoder_layers))
 
 
-# Single training run configuration
-if '__main__' == __name__:
-    dataset_identity = "combined_1"
-    encoder_layers = 1
-    decoder_layers = 1
-    embedding_dim = 10
-    ffn_width = 20
-    num_heads = 2
-    dropout_rate = 0.8
-    EPOCHS = [1, 2, 5]
-    all_heatmaps = False      # If you want to save images of all attention heatmaps, set this to true.
+# MODEL PARAMETERS AND DATA INPUT
+dataset_folder_directory = ""      # Directory for the folder that contains your prepared dataset(s)
+dataset_identity = ""   # The name of the dataset file (do NOT include .csv file extension)
+encoder_layers = 1
+decoder_layers = 1
+embedding_dim = 10
+ffn_width = 20
+num_heads = 2
+dropout_rate = 0.8
+EPOCHS = [1, 2, 5]
+all_heatmaps = False    # If you want to save images of all attention heatmaps, set this to true.
 
-    schedule_identity = "0"
-    write_directory = Write_Results.assign_local_directory(schedule_identity)
+# ENTER THE ANCESTRAL SEQUENCE YOU WANT TO PREDICT ON, AS A CONTINUOUS STRING (NO SPACES), HERE:
+ancestor_sequence = ""
+
+schedule_identity = "0"
+write_directory = Write_Results.assign_local_directory(schedule_identity)
 
 
 # Creating a dictionary, for written results
 written_results = {"predicted_descendant_design": []}
 
-source_dataset, dataset_size = create_tf_dataset("D:\OTHER_PHD_WORK\katies_work\datasets\\" + dataset_identity + ".csv")
+source_dataset, dataset_size = create_tf_dataset(dataset_folder_directory + "\\" + dataset_identity + ".csv")
 train_ds, train_ds_size, val_ds, val_ds_size, test_ds, test_ds_size = create_datasets(source_dataset, dataset_size)
 
 vectorization_layer = Create_Vectorization_Layer(train_ds)
@@ -695,11 +698,7 @@ target_vocab_size = vectorization_layer.vocab_size + 2
 input_seq_length = vectorization_layer.sequence_length + 2  # Adding two for start and end tokens
 output_seq_length = vectorization_layer.sequence_length + 2
 
-# ENTER THE ANCESTRAL SEQUENCE YOU WANT TO PREDICT ON, AS A CONTINUOUS STRING (NO SPACES), HERE:
-ancestor_sequence = ""
-
-
-ancestor_sequence_spaced = ""     # LEAVE THIS BLANK (do not enter the sequence here)
+ancestor_sequence_spaced = ""
 for i in ancestor_sequence:
     ancestor_sequence_spaced += " " + i
 ancestor_sequence_spaced = ancestor_sequence_spaced.strip()
